@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <stdarg.h>
+
+int _printf(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    int count = 0; // To keep track of the number of characters printed
+
+    while (*format != '\0') {
+        if (*format != '%') {
+            putchar(*format);
+            count++;
+        } else {
+            format++; // Move past the '%'
+            if (*format == '\0') break; // Exit if format string ends with '%'
+            if (*format == 'c') {
+                char c = va_arg(args, int);
+                putchar(c);
+                count++;
+            } else if (*format == 's') {
+                const char *str = va_arg(args, const char *);
+                while (*str != '\0') {
+                    putchar(*str);
+                    str++;
+                    count++;
+                }
+            } else if (*format == '%') {
+                putchar('%');
+                count++;
+            } else 
+		{
+                // Unknown conversion specifier, print the '%' and the character as is.
+                putchar('%');
+                putchar(*format);
+                count += 2;
+		}
+        }
+        format++;
+    }
+
+    va_end(args);
+    return count;
+}
+
+int main() 
+{
+    int num = 42;
+    char c = 'A';
+    char *str = "Hello, World!";
+    int result = _printf("Number: %d, Character: %c, String: %s, Percent: %%\n", num, c, str);
+    printf("Number of characters printed: %d\n", result);
+
+    return 0;
+}
